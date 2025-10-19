@@ -47,7 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }){
 
       {/* Footer */}
       <footer className="max-w-3xl mx-auto p-4 flex items-center justify-between">
-        <small>© 2025 Geo-Lingo MVP</small>
+        <small>© 2025 Geo-Lingo version alpha</small>
       </footer>
     </div>
   )
