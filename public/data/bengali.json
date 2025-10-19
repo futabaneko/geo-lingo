@@ -1,0 +1,236 @@
+[
+  {
+    "id": "ben-002",
+    "native_string": "ঢাকা",
+    "primary_answer": "Dhaka",
+    "allowed_answers": ["Dacca"],
+    "language": "bengali",
+    "lat": 23.8103,
+    "lng": 90.4125
+  },
+  {
+    "id": "ben-003",
+    "native_string": "চট্টগ্রাম",
+    "primary_answer": "Chattogram",
+    "allowed_answers": ["Chittagong"],
+    "language": "bengali",
+    "lat": 22.3569,
+    "lng": 91.7832
+  },
+  {
+    "id": "ben-004",
+    "native_string": "খুলনা",
+    "primary_answer": "Khulna",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 22.8456,
+    "lng": 89.5403
+  },
+  {
+    "id": "ben-005",
+    "native_string": "রাজশাহী",
+    "primary_answer": "Rajshahi",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.3745,
+    "lng": 88.6042
+  },
+  {
+    "id": "ben-006",
+    "native_string": "সিলেট",
+    "primary_answer": "Sylhet",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.8949,
+    "lng": 91.8687
+  },
+  {
+    "id": "ben-007",
+    "native_string": "বরিশাল",
+    "primary_answer": "Barishal",
+    "allowed_answers": ["Barisal"],
+    "language": "bengali",
+    "lat": 22.7010,
+    "lng": 90.3535
+  },
+  {
+    "id": "ben-008",
+    "native_string": "রংপুর",
+    "primary_answer": "Rangpur",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 25.7439,
+    "lng": 89.2752
+  },
+  {
+    "id": "ben-009",
+    "native_string": "ময়মনসিংহ",
+    "primary_answer": "Mymensingh",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.7471,
+    "lng": 90.4203
+  },
+  {
+    "id": "ben-010",
+    "native_string": "কুমিল্লা",
+    "primary_answer": "Cumilla",
+    "allowed_answers": ["Comilla"],
+    "language": "bengali",
+    "lat": 23.4607,
+    "lng": 91.1809
+  },
+  {
+    "id": "ben-011",
+    "native_string": "নারায়ণগঞ্জ",
+    "primary_answer": "Narayanganj",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 23.6238,
+    "lng": 90.5000
+  },
+  {
+    "id": "ben-012",
+    "native_string": "গাজীপুর",
+    "primary_answer": "Gazipur",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.0023,
+    "lng": 90.4203
+  },
+  {
+    "id": "ben-013",
+    "native_string": "বগুড়া",
+    "primary_answer": "Bogura",
+    "allowed_answers": ["Bogra"],
+    "language": "bengali",
+    "lat": 24.8465,
+    "lng": 89.3773
+  },
+  {
+    "id": "ben-014",
+    "native_string": "যশোর",
+    "primary_answer": "Jashore",
+    "allowed_answers": ["Jessore"],
+    "language": "bengali",
+    "lat": 23.1634,
+    "lng": 89.2182
+  },
+  {
+    "id": "ben-015",
+    "native_string": "কক্সবাজার",
+    "primary_answer": "Cox's Bazar",
+    "allowed_answers": ["Coxs Bazar"],
+    "language": "bengali",
+    "lat": 21.4272,
+    "lng": 92.0058
+  },
+  {
+    "id": "ben-016",
+    "native_string": "নোয়াখালী",
+    "primary_answer": "Noakhali",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 22.8696,
+    "lng": 91.0995
+  },
+  {
+    "id": "ben-017",
+    "native_string": "ফেনী",
+    "primary_answer": "Feni",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 23.0159,
+    "lng": 91.3976
+  },
+  {
+    "id": "ben-018",
+    "native_string": "ব্রাহ্মণবাড়িয়া",
+    "primary_answer": "Brahmanbaria",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 23.9571,
+    "lng": 91.1115
+  },
+  {
+    "id": "ben-019",
+    "native_string": "পাবনা",
+    "primary_answer": "Pabna",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.0064,
+    "lng": 89.2372
+  },
+  {
+    "id": "ben-020",
+    "native_string": "টাঙ্গাইল",
+    "primary_answer": "Tangail",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.2513,
+    "lng": 89.9167
+  },
+  {
+    "id": "ben-021",
+    "native_string": "দিনাজপুর",
+    "primary_answer": "Dinajpur",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 25.6270,
+    "lng": 88.6332
+  },
+  {
+    "id": "ben-022",
+    "native_string": "ফরিদপুর",
+    "primary_answer": "Faridpur",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 23.6070,
+    "lng": 89.8420
+  },
+  {
+    "id": "ben-023",
+    "native_string": "কিশোরগঞ্জ",
+    "primary_answer": "Kishoreganj",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.4449,
+    "lng": 90.7766
+  },
+  {
+    "id": "ben-024",
+    "native_string": "সিরাজগঞ্জ",
+    "primary_answer": "Sirajganj",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.4534,
+    "lng": 89.7000
+  },
+  {
+    "id": "ben-025",
+    "native_string": "হবিগঞ্জ",
+    "primary_answer": "Habiganj",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 24.3772,
+    "lng": 91.4155
+  },
+  {
+    "id": "ben-026",
+    "native_string": "রাঙ্গামাটি",
+    "primary_answer": "Rangamati",
+    "allowed_answers": [],
+    "language": "bengali",
+    "lat": 22.7324,
+    "lng": 92.2985
+  },
+  {
+    "id": "ben-027",
+    "native_string": "খাগড়াছড়ি",
+    "primary_answer": "Khagrachari",
+    "allowed_answers": ["Khagrachhari"],
+    "language": "bengali",
+    "lat": 23.1193,
+    "lng": 91.9847
+  }
+]

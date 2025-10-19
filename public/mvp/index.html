@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="light dark" />
+        <title>Geo-Lingo (MVP) — Bengali Quiz</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&family=Noto+Sans+JP:wght@400;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="./styles.css">
+    </head>
+    <body>
+        <header class="container header">
+            <h1 class="brand">Geo-Lingo</h1>
+            <nav class="nav">
+                <a href="./index.html" class="nav__link is-active">クイズ</a>
+                <a href="./bengali-guide.html" class="nav__link">ベンガル文字カンペ</a>
+                <button id="theme-toggle" class="nav__link"
+                    title="テーマ切替">🌓</button>
+            </nav>
+        </header>
+
+        <main class="container card">
+            <div class="lang-row">
+                <span>🇧🇩 ベンガル語</span>
+                <a href="./bengali-guide.html" class="hint">💡 ヒント</a>
+            </div>
+            <div id="question" class="question" aria-live="polite">読み込み中…</div>
+            <div id="choices" class="choices" role="group"
+                aria-label="選択肢"></div>
+            <div id="feedback" class="feedback" aria-live="polite"></div>
+            <div class="actions">
+                <button id="next" class="btn btn-primary"
+                    disabled>次の問題へ</button>
+            </div>
+        </main>
+
+        <footer class="container footer">
+            <small>© 2025 Geo-Lingo MVP</small>
+        </footer>
+
+        <script src="./main.js" defer></script>
+    </body>
+</html>

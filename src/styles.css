@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root{
+  /* light */
+  --bg:#f8fafc; /* slate-50 */
+  --card:#ffffff; /* white */
+  --text:#0f172a; /* slate-900 */
+  --muted:#475569; /* slate-600 */
+  --accent:#16a34a; /* green-600 */
+  --danger:#dc2626; /* red-600 */
+  --primary:#2563eb; /* blue-600 */
+  --border:#e2e8f0; /* slate-200 */
+}
+
+[data-theme="dark"]{
+  --bg:#0f172a; /* slate-900 */
+  --card:#111827; /* gray-900 */
+  --text:#e5e7eb; /* gray-200 */
+  --muted:#9ca3af; /* gray-400 */
+  --accent:#22c55e; /* green-500 */
+  --danger:#ef4444; /* red-500 */
+  --primary:#3b82f6; /* blue-500 */
+  --border:#1f2937; /* gray-800 */
+}
+
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+html,body{ font-family:"Noto Sans JP", system-ui, sans-serif; }
+
+/* subtle fade + slide up */
+@keyframes fade-slide-up{
+  from{ opacity:0; transform: translateY(6px); }
+  to{ opacity:1; transform: translateY(0); }
+}
+.animate-fade-slide{
+  animation: fade-slide-up 220ms ease-out;
+}
