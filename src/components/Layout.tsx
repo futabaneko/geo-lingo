@@ -1,4 +1,8 @@
 import { useState } from 'react'
+// アプリのバージョンをフッターに表示
+// tsconfig で resolveJsonModule 有効のため JSON import 可能
+// @ts-ignore
+import pkg from '../../package.json'
 import { Link, NavLink } from 'react-router-dom'
 import { useTheme } from '../lib/useTheme'
 
@@ -46,8 +50,11 @@ export default function Layout({ children }: { children: React.ReactNode }){
       </main>
 
       {/* Footer */}
-      <footer className="max-w-3xl mx-auto p-4 flex items-center justify-between">
-        <small>© 2025 Geo-Lingo version alpha</small>
+      <footer className="max-w-3xl mx-auto p-4 flex items-center justify-between text-sm text-[var(--muted)]">
+        <small>© 2025 Geo-Lingo version {pkg?.version ?? '0.0.0'}</small>
+        <nav>
+          <a href="#/changelog" className="hover:underline">更新履歴</a>
+        </nav>
       </footer>
     </div>
   )

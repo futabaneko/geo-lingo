@@ -18,7 +18,7 @@ const defaultIcon = L.icon({
 })
 L.Marker.prototype.options.icon = defaultIcon
 
-export function MapView({ name, lat, lng }: { name: string; lat?: number; lng?: number }){
+export function MapView({ name, lat, lng, importance }: { name: string; lat?: number; lng?: number; importance?: 1|2|3 }){
   // Track current theme by reading data-theme attribute to switch basemap
   const readTheme = () => (document?.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light') as 'light' | 'dark'
   const [theme, setTheme] = useState<'light' | 'dark'>(readTheme)
@@ -30,6 +30,9 @@ export function MapView({ name, lat, lng }: { name: string; lat?: number; lng?: 
   }, [])
 
   if (typeof lat !== 'number' || typeof lng !== 'number') {
+    if (importance === 1) {
+      return <div className="text-[var(--muted)] text-sm">重要度1の地名は座標を提供していないため、地図は表示されません。</div>
+    }
     return <div className="text-[var(--muted)] text-sm">位置情報が未登録のため、地図を表示できません。</div>
   }
   const center: [number, number] = [lat, lng]

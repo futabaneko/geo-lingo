@@ -12,6 +12,7 @@ type City = {
   language: string
   lat?: number
   lng?: number
+  importance?: 1 | 2 | 3
 }
 
 type Quiz = {
@@ -27,6 +28,11 @@ function shuffle<T>(arr: T[]): T[] {
     const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]
   }
   return a
+}
+
+function pickPool(all: City[], selected: Set<1|2|3>): City[] {
+  if (selected.size === 0 || selected.size === 3) return all
+  return all.filter(c => (c.importance ?? 1) && selected.has((c.importance ?? 1) as 1|2|3))
 }
 
 function buildQuiz(all: City[]): Quiz {
@@ -53,6 +59,8 @@ export default function LanguageQuiz() {
   const [mode, setMode] = useState<'choice' | 'hard'>('choice')
   const [inputText, setInputText] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
+  const [importance, setImportance] = useState<Set<1|2|3>>(new Set([2,3]))
+  const [impOpen, setImpOpen] = useState(false)
 
   const correctText = useMemo(() => quiz?.choices.find(c => c.id === quiz?.correct_answer_id)?.text ?? '', [quiz])
   const correctCity: City | undefined = useMemo(() => (data && quiz) ? data.find(c => c.id === quiz.correct_answer_id) : undefined, [data, quiz])
@@ -67,12 +75,12 @@ export default function LanguageQuiz() {
       .finally(() => setLoading(false))
   }, [lang])
 
-  useEffect(() => { if (data) setQuiz(buildQuiz(data)); setPicked(null) }, [data])
+  useEffect(() => { if (data) setQuiz(buildQuiz(pickPool(data, importance))); setPicked(null) }, [data, importance])
 
   function pick(id: string) { if (!quiz || picked) return; setPicked(id) }
   function next() {
     if (!data) return
-    setQuiz(buildQuiz(data))
+    setQuiz(buildQuiz(pickPool(data, importance)))
     setPicked(null)
     // 自由入力モードの入力は次の問題に進む際にクリア
     setInputText('')
@@ -131,6 +139,16 @@ export default function LanguageQuiz() {
 
   useEffect(() => { window.addEventListener('keydown', handleKey); return () => window.removeEventListener('keydown', handleKey) }, [handleKey])
 
+  // counts per importance
+  const counts = useMemo(() => {
+    const map = { 1: 0, 2: 0, 3: 0 } as Record<1|2|3, number>
+    for (const c of (data || [])) {
+      const k = (c.importance ?? 1) as 1|2|3
+      map[k]++
+    }
+    return map
+  }, [data])
+
   return (
     <Layout>
       <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow">
@@ -156,6 +174,62 @@ export default function LanguageQuiz() {
                 title="自由入力モード（ハード）"
               >自由入力</button>
             </div>
+            {/* importance filter popup */}
+            <div className="relative">
+              <button
+                onClick={() => setImpOpen(v => !v)}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-full border border-[var(--border)] bg-[var(--card)] text-xs"
+                aria-expanded={impOpen}
+                aria-haspopup="dialog"
+                title="重要度選択"
+              >
+                <span aria-hidden>🎯</span>
+                <span>重要度選択</span>
+              </button>
+              {impOpen && (
+                <div className="absolute right-0 mt-2 w-72 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg p-3 z-20">
+                  <div className="mb-2">
+                    <div className="font-semibold text-sm">重要度で出題を絞り込み</div>
+                    <p className="text-[var(--muted)] text-xs mt-1">3: 主要都市・州名 / 2: 地方都市 / 1: それ以外</p>
+                  </div>
+                  <div className="space-y-2">
+                    {[3,2,1].map(level => {
+                      const lv = level as 1|2|3
+                      const active = importance.has(lv)
+                      return (
+                        <label key={lv} className="flex items-center justify-between gap-2 text-sm">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={active}
+                              onChange={() => {
+                                const next = new Set(importance)
+                                active ? next.delete(lv) : next.add(lv)
+                                if (next.size === 0) { next.add(1); next.add(2); next.add(3) }
+                                setImportance(next)
+                              }}
+                            />
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full border text-xs ${active ? 'border-[var(--primary)]' : 'border-[var(--border)]'}`}>{lv}</span>
+                            <span className="text-[var(--muted)]">{lv===3?'主要都市・州名': lv===2?'地方都市':'それ以外'}</span>
+                          </div>
+                          <span className="text-xs text-[var(--muted)]">{counts[lv]}件</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                  <div className="mt-3 flex items-center justify-end gap-2 text-xs">
+                    <button
+                      className="px-2.5 py-1.5 rounded-full border border-[var(--border)]"
+                      onClick={() => { setImportance(new Set([1,2,3])) }}
+                    >全選択</button>
+                    <button
+                      className="px-3 py-1.5 rounded-full border shadow border-blue-300 bg-[var(--primary)] text-white"
+                      onClick={() => setImpOpen(false)}
+                    >閉じる</button>
+                  </div>
+                </div>
+              )}
+            </div>
             {/* shortcut tooltip */}
             <div className="relative group">
               <button
@@ -174,22 +248,31 @@ export default function LanguageQuiz() {
                 </ul>
               </div>
             </div>
-            <Link
-              to={`/${lang}/guide`}
-              className="inline-flex items-center gap-1 text-sm text-[var(--muted)] hover:text-[var(--text)] hover:underline"
-              title="ヒントを見る"
-              aria-label="ヒントを見る"
-            >
-              <span aria-hidden>💡</span>
-              <span className="hidden sm:inline">ヒント</span>
-            </Link>
+            <div className="relative group">
+
+              <Link
+                to={`/${lang}/guide`}
+                className="w-8 h-8 grid place-items-center rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--muted)]"
+                title="ヒントを見る"
+                aria-label="ヒントを見る"
+              >
+                <span aria-hidden>💡</span>
+              </Link>
+
+              <div 
+                className="pointer-events-none absolute right-0 mt-2 hidden w-auto rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block whitespace-nowrap"
+                role="tooltip"
+              >
+                <div className="font-semibold text-[var(--text)]">ヒントを見る</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <h2 className="sr-only">問題</h2>
         <div
           key={quiz?.question.id}
-          className="font-bengali text-5xl text-center my-2 tracking-wide animate-fade-slide"
+          className="font-bengali text-5xl text-center my-2 pt-6 pb-2 tracking-wide animate-fade-slide"
           aria-live="polite"
         >
           {error ? '' : quiz?.question.native_string ?? (loading ? '読み込み中…' : '…')}
@@ -259,7 +342,7 @@ export default function LanguageQuiz() {
 
         {picked && correctCity && (
           <div className="mt-4">
-            <MapView name={correctCity.primary_answer} lat={correctCity.lat} lng={correctCity.lng} />
+            <MapView name={correctCity.primary_answer} lat={correctCity.lat} lng={correctCity.lng} importance={correctCity.importance ?? 1} />
           </div>
         )}
       </section>

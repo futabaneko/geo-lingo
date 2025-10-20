@@ -1,6 +1,6 @@
 {
-  "name": "georengo",
-  "version": "0.1.0",
+  "name": "geolingo",
+  "version": "alpha 1.1.0",
   "private": true,
   "type": "module",
   "scripts": {

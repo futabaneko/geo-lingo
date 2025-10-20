@@ -5,6 +5,7 @@ import Home from './pages/Home'
 import GuideIndex from './pages/GuideIndex'
 import LanguageQuiz from './pages/LanguageQuiz'
 import LanguageGuide from './pages/LanguageGuide'
+import Changelog from './pages/Changelog'
 import './styles.css'
 
 createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<Home />} />
         {/* Guides landing */}
         <Route path="/guide" element={<GuideIndex />} />
+  {/* Changelog */}
+  <Route path="/changelog" element={<Changelog />} />
         {/* language-scoped routes */}
         <Route path=":lang" element={<LanguageQuiz />} />
         <Route path=":lang/guide" element={<LanguageGuide />} />
