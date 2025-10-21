@@ -9,7 +9,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        bengali: ['"Noto Sans Bengali"', '"Noto Sans JP"', 'system-ui', 'sans-serif'],
+        bengali: ['"Noto Sans Bengali"', '"Nirmala UI"', 'Vrinda', '"Noto Sans JP"', 'system-ui', 'sans-serif'],
         sans: ['"Noto Sans JP"', 'system-ui', 'sans-serif'],
       },
       borderRadius: {

@@ -61,6 +61,7 @@ export default function LanguageQuiz() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [importance, setImportance] = useState<Set<1|2|3>>(new Set([2,3]))
   const [impOpen, setImpOpen] = useState(false)
+  const [showReadings, setShowReadings] = useState(true)
 
   const correctText = useMemo(() => quiz?.choices.find(c => c.id === quiz?.correct_answer_id)?.text ?? '', [quiz])
   const correctCity: City | undefined = useMemo(() => (data && quiz) ? data.find(c => c.id === quiz.correct_answer_id) : undefined, [data, quiz])
@@ -76,6 +77,17 @@ export default function LanguageQuiz() {
   }, [lang])
 
   useEffect(() => { if (data) setQuiz(buildQuiz(pickPool(data, importance))); setPicked(null) }, [data, importance])
+
+  // persist reading hint preference
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem('showReadings')
+      if (v !== null) setShowReadings(v === '1')
+    } catch {}
+  }, [])
+  useEffect(() => {
+    try { localStorage.setItem('showReadings', showReadings ? '1' : '0') } catch {}
+  }, [showReadings])
 
   function pick(id: string) { if (!quiz || picked) return; setPicked(id) }
   function next() {
@@ -149,16 +161,99 @@ export default function LanguageQuiz() {
     return map
   }, [data])
 
+  // --- Reading (romanization) tooltip for Bengali graphemes ---
+  const segmentGraphemes = useMemo(() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const Seg: any = (Intl as any).Segmenter
+      if (Seg) {
+        const seg = new Seg('bn', { granularity: 'grapheme' })
+        return (s: string) => Array.from(seg.segment(s), (x: { segment: string }) => x.segment)
+      }
+    } catch {}
+    return (s: string) => Array.from(s)
+  }, [])
+
+  const BN_CONSONANTS: Record<string, string> = {
+    'ক': 'k', 'খ': 'kh', 'গ': 'g', 'ঘ': 'gh', 'ঙ': 'ng',
+    'চ': 'ch', 'ছ': 'chh', 'জ': 'j', 'ঝ': 'jh', 'ঞ': 'ny',
+    'ট': 'ṭ', 'ঠ': 'ṭh', 'ড': 'ḍ', 'ঢ': 'ḍh', 'ণ': 'ṇ',
+    'ত': 't', 'থ': 'th', 'দ': 'd', 'ধ': 'dh', 'ন': 'n',
+    'প': 'p', 'ফ': 'ph', 'ব': 'b', 'ভ': 'bh', 'ম': 'm',
+    'য': 'y', 'র': 'r', 'ল': 'l', 'শ': 'sh', 'ষ': 'sh', 'স': 's', 'হ': 'h',
+    'ড়': 'r', 'ঢ়': 'rh', 'য়': 'y',
+  }
+  const BN_INDEP_VOWELS: Record<string, string> = {
+    'অ': 'a', 'আ': 'ā', 'ই': 'i', 'ঈ': 'ī', 'উ': 'u', 'ঊ': 'ū',
+    'ঋ': 'ri', 'এ': 'e', 'ঐ': 'oi', 'ও': 'o', 'ঔ': 'ou'
+  }
+  const BN_MATRAS: Record<string, string> = {
+    'া': 'ā', 'ি': 'i', 'ী': 'ī', 'ু': 'u', 'ূ': 'ū', 'ৃ': 'ri', 'ে': 'e', 'ৈ': 'oi', 'ো': 'o', 'ৌ': 'ou'
+  }
+  const BN_SIGNS: Record<string, string> = { 'ঁ': '̃', 'ং': 'ṁ', 'ঃ': 'ḥ' }
+  const VIRAMA = '্'
+
+  function isBengaliRange(ch: string) {
+    const code = ch.codePointAt(0) ?? 0
+    return code >= 0x0980 && code <= 0x09FF
+  }
+
+  function romanizeBengaliGrapheme(g: string): string | undefined {
+    // if independent vowel
+    if (g in BN_INDEP_VOWELS) return BN_INDEP_VOWELS[g]
+    // decompose inside the cluster
+    const cps = Array.from(g)
+    const cons: string[] = []
+    let vowel: string | null = null
+    let signs = ''
+    for (const ch of cps) {
+      if (BN_MATRAS[ch]) { vowel = BN_MATRAS[ch]; continue }
+      if (BN_SIGNS[ch]) { signs += BN_SIGNS[ch]; continue }
+      if (ch === VIRAMA) { continue }
+      if (BN_CONSONANTS[ch]) { cons.push(BN_CONSONANTS[ch]); continue }
+      // unknown within Bengali block
+    }
+    if (cons.length) return cons.join('') + (vowel ?? '?') + signs
+    return undefined
+  }
+
+  function renderQuestionWithReadings(text: string) {
+    const segs = segmentGraphemes(text)
+    return (
+      <span aria-label={text}>
+        {segs.map((g, i) => {
+          const isSpace = /^\s+$/.test(g)
+          const reading = isBengaliRange(g) ? romanizeBengaliGrapheme(g) : undefined
+          if (isSpace) {
+            return <span key={i}>{g}</span>
+          }
+          return (
+            <span key={i} className="relative inline-block group align-baseline">
+              <span className="hover:underline decoration-dotted decoration-blue-400/60 underline-offset-[0.35em] decoration-skip-ink-none transition-colors">
+                {g}
+              </span>
+              {reading && (
+                <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[-3.2em] whitespace-nowrap rounded-md border border-[var(--border)] bg-[var(--card)] px-2 py-1 text-[10px] sm:text-xs text-[var(--text)] shadow opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity duration-150 z-10">
+                  {reading}
+                </span>
+              )}
+            </span>
+          )
+        })}
+      </span>
+    )
+  }
+
   return (
     <Layout>
-      <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-6 shadow">
+      <section className="bg-[var(--card)] border border-[var(--border)] rounded-xl p-4 sm:p-6 shadow">
         {/* Language badge row */}
-        <div className="mb-2 flex items-center justify-between">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <div className="inline-flex items-center gap-2 text-sm text-[var(--muted)]">
             <span aria-hidden>{meta.flag}</span>
             <span>{meta.label}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto justify-start sm:justify-end">
             {/* mode toggle */}
             <div className="inline-flex overflow-hidden rounded-full border border-[var(--border)] bg-[var(--card)] text-xs">
               <button
@@ -187,7 +282,7 @@ export default function LanguageQuiz() {
                 <span>重要度選択</span>
               </button>
               {impOpen && (
-                <div className="absolute right-0 mt-2 w-72 rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg p-3 z-20">
+                <div className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-xl border border-[var(--border)] bg-[var(--card)] shadow-lg p-3 z-20">
                   <div className="mb-2">
                     <div className="font-semibold text-sm">重要度で出題を絞り込み</div>
                     <p className="text-[var(--muted)] text-xs mt-1">3: 主要都市・州名 / 2: 地方都市 / 1: それ以外</p>
@@ -230,6 +325,24 @@ export default function LanguageQuiz() {
                 </div>
               )}
             </div>
+            {/* reading hint toggle */}
+            <div className="relative group">
+              <button
+                onClick={() => setShowReadings(v => !v)}
+                className={`w-8 h-8 grid place-items-center rounded-full border bg-[var(--card)] ${showReadings ? 'border-[var(--primary)] text-[var(--text)]' : 'border-[var(--border)] text-[var(--muted)]'}`}
+                aria-pressed={showReadings}
+                aria-label="読みヒントの切替"
+                title="読みヒントの切替"
+              >
+                <span aria-hidden>🔤</span>
+              </button>
+              <div 
+                className="pointer-events-none absolute right-0 mt-4 hidden w-auto rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block whitespace-nowrap"
+                role="tooltip"
+              >
+                <div className="font-semibold text-[var(--text)]">読みヒント: {showReadings ? 'ON' : 'OFF'}</div>
+              </div>
+            </div>
             {/* shortcut tooltip */}
             <div className="relative group">
               <button
@@ -240,7 +353,7 @@ export default function LanguageQuiz() {
               >
                 ?
               </button>
-              <div className="pointer-events-none absolute right-0 mt-2 hidden w-[220px] rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block">
+              <div className="pointer-events-none absolute right-0 mt-3 hidden w-[220px] max-w-[calc(100vw-2rem)] rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block">
                 <div className="font-semibold text-[var(--text)] mb-1">ショートカット</div>
                 <ul className="list-disc pl-4 space-y-1">
                   <li>1–4: 選択肢を選ぶ</li>
@@ -260,7 +373,7 @@ export default function LanguageQuiz() {
               </Link>
 
               <div 
-                className="pointer-events-none absolute right-0 mt-2 hidden w-auto rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block whitespace-nowrap"
+                className="pointer-events-none absolute right-0 mt-3 hidden w-auto rounded-lg border border-[var(--border)] bg-[var(--card)] p-3 text-xs text-[var(--muted)] shadow group-hover:block group-focus-within:block whitespace-nowrap"
                 role="tooltip"
               >
                 <div className="font-semibold text-[var(--text)]">ヒントを見る</div>
@@ -272,13 +385,14 @@ export default function LanguageQuiz() {
         <h2 className="sr-only">問題</h2>
         <div
           key={quiz?.question.id}
-          className="font-bengali text-5xl text-center my-2 pt-6 pb-2 tracking-wide animate-fade-slide"
+          className="font-bengali text-4xl sm:text-5xl text-center my-2 pt-10 pb-6 tracking-wide animate-fade-slide"
+          lang="bn"
           aria-live="polite"
         >
-          {error ? '' : quiz?.question.native_string ?? (loading ? '読み込み中…' : '…')}
+          {error ? '' : quiz?.question?.native_string ? (showReadings ? renderQuestionWithReadings(quiz.question.native_string) : quiz.question.native_string) : (loading ? '読み込み中…' : '…')}
         </div>
         {error && (
-          <div className="mt-3 p-3 rounded-lg border border-[var(--danger)] text-[var(--danger)] bg-[color:rgb(239_68_68_/_0.06)]">{error}</div>
+          <div className="mt-4 p-3 rounded-lg border border-[var(--danger)] text-[var(--danger)] bg-[color:rgb(239_68_68_/_0.06)]">{error}</div>
         )}
 
         {mode === 'choice' ? (

@@ -8,6 +8,15 @@ export type ChangeLogEntry = {
 }
 
 export const CHANGELOG: ChangeLogEntry[] = [
+      {
+    date: '2025-10-20',
+        title: '読みヒントモード',
+        version: 'alpha 1.2.0',
+        items: [
+        { tag: 'feat', text: '読みヒントモードを追加' },
+        { tag: 'fix', text: 'クイズページのレスポンシブデザインを修正' },
+        ],
+    },
     {
     date: '2025-10-20',
         title: 'ベンガル語の辞書拡充',
